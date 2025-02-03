@@ -47,6 +47,7 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       working-directory: ./src
       env:
+        AWS_REGION: eu-central-1
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: sqs-processor
       run: |
