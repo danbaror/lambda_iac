@@ -45,16 +45,11 @@ def get_mongo_connection_string():
     response = get_secret(secret_name)
     print('Debug: ', response)
     # Parse the secret (either JSON or plain text)
-    # if "SecretString" in response:
-    #   secret_data = json.loads(response["SecretString"])
-    # else:
-    #   secret_data = json.loads(response["SecretBinary"].decode("utf-8"))
-
-    #   # Extract connection string
-    #   connection_string = secret_data.get("connection_string")
-    #   if not connection_string:
-    #     raise KeyError(" Error: connection_string not found in secret!")
-    connection_string = 'connect-str'
+    if "connection_string" in response:
+      # Extract connection string
+      connection_string = response.get("connection_string")
+    else:
+      raise KeyError(" Error: connection_string not found in secret!")
     return connection_string
 
 
@@ -82,7 +77,7 @@ def lambda_handler(event, context):
         # })
 
         # Delete message from SQS after processing
-        # sqs.delete_message( QueueUrl=SQS_QUEUE_URL, ReceiptHandle=record['receiptHandle'])
+        sqs.delete_message( QueueUrl=SQS_QUEUE_URL, ReceiptHandle=record['receiptHandle'])
 
     return {"statusCode": 200, "body": "Messages processed successfully"}
 
