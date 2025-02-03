@@ -32,13 +32,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-central-1
 
-    - name: Extract branch name
-      id: extract_branch
-      run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
     - name: Generate image tag
       id: generate_tag
-      run: echo "IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ github.sha }}" >> $GITHUB_ENV
+      run: echo "IMAGE_TAG=sqs-build-${{ github.sha }}" >> $GITHUB_ENV
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -53,5 +49,6 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         
