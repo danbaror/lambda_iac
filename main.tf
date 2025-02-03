@@ -101,7 +101,13 @@ resource "aws_iam_policy" "lambda_sqs_policy" {
       Action   = ["sqs:CreateQueue", "sqs:ReceiveMessage", "sqs:SendMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]
       Effect   = "Allow"
       Resource = aws_sqs_queue.api_queue.arn
-    }]
+    },
+    {
+      Action   = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
+      Effect   = "Allow"
+      Resource = "arn:aws:logs:eu-central-1:*:*:*"
+    }
+    ]
   })
 }
 
@@ -113,10 +119,6 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
 
 resource "aws_secretsmanager_secret" "mongodb_secret" {
   name = "mongodb_clarity_connection_string"
-}
-
-output "secret_arn" {
-  value = aws_secretsmanager_secret.mongodb_secret.arn
 }
 
 # ─────────────────────────────────────────────────────────────
