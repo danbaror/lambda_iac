@@ -34,7 +34,7 @@ def get_secret(secret_name, region_name=region):
             return secret  # Return as plain string if not JSON
 
     except Exception as e:
-        print(f"Error retrieving secret: {e}")
+        print(f" Error retrieving secret: {e}")
         return None
 
 
