@@ -53,7 +53,7 @@ def get_mongo_connection_string():
       # Extract connection string
       connection_string = secret_data.get("connection_string")
       if not connection_string:
-        raise KeyError("connection_string not found in secret!")
+        raise KeyError(" Error: connection_string not found in secret!")
     return connection_string
 
 
