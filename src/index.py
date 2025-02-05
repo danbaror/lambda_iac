@@ -1,7 +1,10 @@
 import json
 import boto3
 import os
-from pymongo import MongoClient
+import certifi
+from pymongo import MongoClient, WriteConcern
+
+ca = certifi.where()
 
 # AWS clients
 sqs = boto3.client('sqs')
@@ -40,10 +43,9 @@ def get_secret(secret_name, region_name=region):
 
 # Get MongoDB connection string from AWS Secrets Manager
 def get_mongo_connection_string():
-    # secret_value = secretsmanager.get_secret_value(SecretId=str(MONGO_SECRET_ARN))
     secret_name = 'mongodb_clarity_connection_string'
     response = get_secret(secret_name)
-    print('Debug: ', response)
+    print('Debug:', response)
     # Parse the secret (either JSON or plain text)
     if "connection_string" in response:
       # Extract connection string
@@ -56,17 +58,18 @@ def get_mongo_connection_string():
 def lambda_handler(event, context):
     # Get MongoDB connection
     mongo_conn_str = get_mongo_connection_string()
-    client = MongoClient(mongo_conn_str)
-    db = client["food-orders"]  # Project: Clarity, Database: orders
+    client = MongoClient(mongo_conn_str, tlsCAFile=ca)
+        
+    db = client.get_database("food-orders", write_concern=WriteConcern(w=1, wtimeout=900))  # Project: Clarity, Database: orders
     collection = db["requests"]
 
     for record in event['Records']:
-        
+   
         # message_body = json.loads(record['body'])
         message_body = record['body']
 
         # Insert into MongoDB Atlas
-        collection.insert_one({ "message_id" : record['messageId'], "messageBody": record['body']})
+        # collection.insert_one({ "message_id" : record['messageId'], "messageBody": record['body']})
         # Insert into MongoDB Atlas
         # collection.insert_one({
         #     "order_id": message_body["order_id"],
@@ -77,14 +80,15 @@ def lambda_handler(event, context):
         # })
 
         # Delete message from SQS after processing
-        sqs.delete_message( QueueUrl=SQS_QUEUE_URL, ReceiptHandle=record['receiptHandle'])
-
+        # sqs.delete_message( QueueUrl=SQS_QUEUE_URL, ReceiptHandle=record['receiptHandle'])
+    print(' -- exit handler --')
     return {"statusCode": 200, "body": "Messages processed successfully"}
 
 if __name__ == "__main__":
     context = []
     event = {
         "Records": [
+            { "messageId":"01234" , "body": "some text from queue","receiptHandle":"34"},
             { "receiptHandle": "01", "body": {"order_id": "001", "customer": "David", "items": "bananas", "price": "3.3", "timestamp": "2025-02-02 23:35"}},
             { "receiptHandle": "02", "body": {"order_id": "002", "customer": "Jacob", "items": "Melons", "price": "6.3", "timestamp": "2025-02-02 23:36"}},
             { "receiptHandle": "03", "body": {"order_id": "003", "customer": "Gil", "items": "Oranges", "price": "5.2", "timestamp": "2025-02-02 23:37"}},
