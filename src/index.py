@@ -58,10 +58,10 @@ def get_mongo_connection_string():
 def lambda_handler(event, context):
     # Get MongoDB connection
     mongo_conn_str = get_mongo_connection_string()
-    client = MongoClient(mongo_conn_str, tlsCAFile=ca)
+    # client = MongoClient(mongo_conn_str, tlsCAFile=ca)
         
-    db = client.get_database("food-orders", write_concern=WriteConcern(w=1, wtimeout=900))  # Project: Clarity, Database: orders
-    collection = db["requests"]
+    # db = client.get_database("food-orders", write_concern=WriteConcern(w=1, wtimeout=900))  # Project: Clarity, Database: orders
+    # collection = db["requests"]
 
     # for record in event['Records']:
    
@@ -82,7 +82,7 @@ def lambda_handler(event, context):
         # Delete message from SQS after processing
         # sqs.delete_message( QueueUrl=SQS_QUEUE_URL, ReceiptHandle=record['receiptHandle'])
     print(' --- exit handler with status 200 ---')
-    return {"statusCode": 200, "body": "Messages processed successfully"}
+    return {"statusCode": 200, "body": "Messages processed successfully."}
 
 if __name__ == "__main__":
     context = []
