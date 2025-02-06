@@ -58,18 +58,18 @@ def get_mongo_connection_string():
 def lambda_handler(event, context):
     # Get MongoDB connection
     mongo_conn_str = get_mongo_connection_string()
-    # client = MongoClient(mongo_conn_str, tlsCAFile=ca)
+    client = MongoClient(mongo_conn_str, tlsCAFile=ca)
         
-    # db = client.get_database("food-orders", write_concern=WriteConcern(w=1, wtimeout=900))  # Project: Clarity, Database: orders
-    # collection = db["requests"]
+    db = client.get_database("food-orders", write_concern=WriteConcern(w=1, wtimeout=900))  # Project: Clarity, Database: orders
+    collection = db["requests"]
 
-    # for record in event['Records']:
+    for record in event['Records']:
    
         # message_body = json.loads(record['body'])
         # message_body = record['body']
 
         # Insert into MongoDB Atlas
-        # collection.insert_one({ "message_id" : record['messageId'], "messageBody": record['body']})
+        collection.insert_one({ "message_id" : record['messageId'], "messageBody": record['body']})
         # Insert into MongoDB Atlas
         # collection.insert_one({
         #     "order_id": message_body["order_id"],
