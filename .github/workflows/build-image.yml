@@ -4,10 +4,10 @@ name: Build and Push Docker image
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main1", "develop" ]
+    branches: [ "main", "develop" ]
     paths: [ 'src/**' ]
   pull_request:
-    branches: [ "main1", "develop1" ]
+    branches: [ "main", "develop" ]
     paths: [ 'src/**' ]
 
   # Allows you to run this workflow manually from the Actions tab
