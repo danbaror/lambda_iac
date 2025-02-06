@@ -1,5 +1,10 @@
 variable "region" {
-  description = "AWS regio"
+  description = "AWS region"
+  type = string
+}
+
+variable "aws_account_id" {
+  description = "AWS region"
   type = string
 }
 
@@ -65,3 +70,11 @@ variable image_tag {
   type = string
 }
 
+variable function_name {
+  type = string
+}
+
+variable role_arn {
+  description = "Lambda function IAM Role arn"
+  type = string
+}

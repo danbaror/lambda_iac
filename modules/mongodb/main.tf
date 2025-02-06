@@ -13,16 +13,6 @@ resource "mongodbatlas_cluster" "this" {
   cluster_type         = "REPLICASET" # Required for free clusters
 }
 
-# resource "mongodbatlas_cluster" "food-orders" {
-#   project_id    = var.project_id
-#   name          = var.cluster_name
-#   provider_name = "AWS"   # This is required for free-tier clusters
-#   cloud_backup = false       # Free tier does not support backups
-#   provider_region_name = var.region
-#   provider_instance_size_name = "M0"
-#   cluster_type         = "REPLICASET" # Required for free clusters
-# }
-
 resource "mongodbatlas_database_user" "this" {
   username           = var.db_user
   password           = var.db_password

@@ -1,0 +1,5 @@
+awslambdaric
+certifi
+boto3==1.36.7         # AWS SDK for Python (SQS, Secrets Manager, etc.)
+pymongo==4.11         # MongoDB Atlas connection (srv for handling MongoDB+SRV URIs)
+dnspython==2.7.0      # Required by pymongo for MongoDB Atlas DNS resolution

@@ -14,7 +14,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 5.84.0"
     }
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
@@ -49,7 +49,7 @@ module "vpc_iac" {
     Name        = "lambda_vpc"
     Environment = "dev"
     CreatedBy   = "Dan Bar-Or"
-    Date        = "01-Feb-2025"
+    Date        = "03-Feb-2025"
   }
 }
 
@@ -74,63 +74,8 @@ resource "aws_sqs_queue" "api_queue" {
   message_retention_seconds  = 86400  # 1 day
 }
 
-# ─────────────────────────────────────────────────────────────
-# IAM Role for Lambda
-# ─────────────────────────────────────────────────────────────
-resource "aws_iam_role" "lambda_role" {
-  name = var.lambda_role_name
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = { Service = "lambda.amazonaws.com" }
-    }]
-  })
-}
-
-# IAM Policy for Lambda (Allow Access to SQS)
-resource "aws_iam_policy" "lambda_sqs_policy" {
-  name        = "${var.lambda_role_name}-policy"
-  description = "Allows Lambda to read from SQS and write to DynamoDB"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action   = ["sqs:CreateQueue", "sqs:ReceiveMessage", "sqs:SendMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]
-      Effect   = "Allow"
-      Resource = aws_sqs_queue.api_queue.arn
-    }]
-  })
-}
-
-# Attach IAM Policy to IAM Role
-resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.lambda_sqs_policy.arn
-}
-
 resource "aws_secretsmanager_secret" "mongodb_secret" {
   name = "mongodb_clarity_connection_string"
-}
-
-output "secret_arn" {
-  value = aws_secretsmanager_secret.mongodb_secret.arn
-}
-
-# ─────────────────────────────────────────────────────────────
-# Lambda Function with SQS Event Source
-# ─────────────────────────────────────────────────────────────
-module "sqs_processor_lambda" {
-  source             = "./modules/lambda_sqs"
-  function_name      = "sqs-message-processor"
-  role_arn           = aws_iam_role.lambda_role.arn
-  event_source_arn   = aws_sqs_queue.api_queue.arn
-  event_source_url   = aws_sqs_queue.api_queue.url
-  mongo_secret_arn   = aws_secretsmanager_secret.mongodb_secret.arn
-  aws_ecr_repository = aws_ecr_repository.lambda_ecr.repository_url
-  image_tag          = var.image_tag
 }
 
 # ─────────────────────────────────────────────────────────────
