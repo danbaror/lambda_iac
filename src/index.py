@@ -63,13 +63,13 @@ def lambda_handler(event, context):
     db = client.get_database("food-orders", write_concern=WriteConcern(w=1, wtimeout=900))  # Project: Clarity, Database: orders
     collection = db["requests"]
 
-    for record in event['Records']:
+    # for record in event['Records']:
    
         # message_body = json.loads(record['body'])
-        message_body = record['body']
+        # message_body = record['body']
 
         # Insert into MongoDB Atlas
-        collection.insert_one({ "message_id" : record['messageId'], "messageBody": record['body']})
+        # collection.insert_one({ "message_id" : record['messageId'], "messageBody": record['body']})
         # Insert into MongoDB Atlas
         # collection.insert_one({
         #     "order_id": message_body["order_id"],
@@ -81,7 +81,7 @@ def lambda_handler(event, context):
 
         # Delete message from SQS after processing
         # sqs.delete_message( QueueUrl=SQS_QUEUE_URL, ReceiptHandle=record['receiptHandle'])
-    print(' --- exit handler ---')
+    print(' --- exit handler with status 200 ---')
     return {"statusCode": 200, "body": "Messages processed successfully"}
 
 if __name__ == "__main__":
