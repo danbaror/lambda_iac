@@ -64,4 +64,3 @@ variable image_tag {
   description = "Docker image version tag"
   type = string
 }
-
